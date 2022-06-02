@@ -8,23 +8,20 @@ const port = 5000
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static(path.resolve('./public')))
+app.use(express.static('public'))
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)
 })
 
-// Get all files
-app.get('/files', (req, res) => {
-    fs.readdir(path.join(__dirname, 'public'), (err, files) => {
-        //handling error
+// get all docs
+app.get('/docs', (req, res) => {
+    fs.readdir(path.join(__dirname, 'public/docs'), (err, files) => {
         if (err) {
-            return console.log('Unable to scan directory: ' + err);
+            res.send(500)
         } 
-        //listing all files using forEach
-        files.forEach((file) => {
-            // Do whatever you want to do with the file
-            console.log(file); 
-        });
+        let output = []
+        files.forEach((file) => output.push(file));
+        res.send(output)
     });
 })
