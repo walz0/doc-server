@@ -11,11 +11,11 @@
     <div id="root"></div>
 </body>
 
-<script src="./build/pdf.js"></script>
 <script>
+    const api = 'http://localhost:5000/docs'
+
     function getDocs() {
-        let output = ""
-        fetch('http://localhost:5000/docs')
+        fetch(api)
             .then(response => response.json())
             .then(data => {
                 data.forEach(doc => {
@@ -36,7 +36,6 @@
         title.onclick = async () => {
             document.cookie = "document=" + doc["checksum"]
             document.cookie = "path=/backend/public" + doc["path"]
-            // alert(doc["path"])
             window.location = "./web/viewer.html#page=" + doc["lastPage"]
         }
 
@@ -52,6 +51,9 @@
         height: 15vh;
         background: red;
     } */
+    h1 {
+        font-family: monospace;
+    }
 
     .doc-title {
         font-size: 1.2em;

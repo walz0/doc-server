@@ -37,11 +37,9 @@ function getLastPage(checksum) {
 
 function saveLastPage(checksum, currentPage) {
     let data = JSON.parse(fs.readFileSync("./data.json"))
-    console.log(data)
     data[checksum] = {
         "lastPage": currentPage
     }
-    console.log(JSON.stringify(data))
     fs.writeFileSync("./data.json", JSON.stringify(data))
 }
 
@@ -68,7 +66,6 @@ app.get('/docs', (req, res) => {
 app.post('/save', (req, res) => {
     const checksum = req.body.checksum
     const currentPage = req.body.currentPage
-    console.log(checksum, currentPage)
     saveLastPage(checksum, currentPage)
     res.send(200)
 })
