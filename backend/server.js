@@ -31,15 +31,17 @@ function getChecksum(file) {
 
 function getLastPage(checksum) {
     const data = JSON.parse(fs.readFileSync("./data.json"))
-    if (checksum in data) return data[checksum]
+    if (checksum in data) return data[checksum]["lastPage"]
     return 0
 }
 
 function saveLastPage(checksum, currentPage) {
     let data = JSON.parse(fs.readFileSync("./data.json"))
+    console.log(data)
     data[checksum] = {
         "lastPage": currentPage
     }
+    console.log(JSON.stringify(data))
     fs.writeFileSync("./data.json", JSON.stringify(data))
 }
 
@@ -53,7 +55,8 @@ app.get('/docs', (req, res) => {
             const lastPage = getLastPage(checksum)
             output.push({
                 "path": '/docs/' + file,
-                "title": file, "lastPage": lastPage,
+                "title": file, 
+                "lastPage": lastPage,
                 "checksum": checksum
             })
         })
@@ -65,6 +68,7 @@ app.get('/docs', (req, res) => {
 app.post('/save', (req, res) => {
     const checksum = req.body.checksum
     const currentPage = req.body.currentPage
+    console.log(checksum, currentPage)
     saveLastPage(checksum, currentPage)
     res.send(200)
 })

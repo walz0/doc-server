@@ -7221,17 +7221,20 @@ class PDFOutlineViewer extends _base_tree_viewer.BaseTreeViewer {
 
     this.eventBus._on("pagechanging", evt => {
       this._currentPageNumber = evt.pageNumber;
+
+      let cookies = document.cookie.split(";")
+      let doc = cookies.filter(cookie => cookie.includes("document="))[0].split("=")[1]
       // save page progress in backend
       fetch("http://localhost:5000/save", {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
+        method: 'POST',
+        mode: 'cors',
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'same-origin', // include, *same-origin, omit
         headers: {
           'Content-Type': 'application/json'
         },
         referrerPolicy: 'no-referrer',
-        body: JSON.stringify({"checksum": document.cookie.split("=")[1], "currentPage": evt.pageNumber})
+        body: JSON.stringify({"checksum": doc, "currentPage": evt.pageNumber})
       });
     });
 
