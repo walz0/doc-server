@@ -2,12 +2,7 @@ const express = require("express")
 const cors = require("cors")
 const fs = require("fs")
 const path = require("path")
-const crypto = require('crypto');
-
-// fs.readFile('file.pdf', function(err, data) {
-//   var checksum = generateChecksum(data);
-//   console.log(checksum);
-// });
+const crypto = require('crypto')
 
 const app = express()
 const port = 5000
@@ -40,8 +35,10 @@ function getLastPage(checksum) {
     return 0
 }
 
-function saveLastPage() {
-    
+function saveLastPage(checksum, currentPage) {
+    let data = JSON.parse(fs.readFileSync("./data.json"))
+    data[checksum]["lastPage"] = currentPage
+    fs.writeFileSync(data[checksum]["path"], data)
 }
 
 // get all docs
@@ -53,11 +50,20 @@ app.get('/docs', (req, res) => {
             const checksum = getChecksum(file)
             const lastPage = getLastPage(checksum)
             output.push({
-                "fileName": file,
+                "path": '/docs/' + file,
+                "title": file,
                 "lastPage": lastPage,
                 "checksum": checksum
             })
         })
         res.send(output)
     });
+})
+
+// save progress in document
+app.post('/save', (req, res) => {
+    const checksum = req.body.checksum
+    const currentPage = req.body.currentPage
+    saveLastPage(checksum, currentPage)
+    res.send(200)
 })

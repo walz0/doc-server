@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>doc-server</title>
+</head>
+<body>
+    <h1>Hosted Documents</h1>
+    <div id="root"></div>
+    <canvas id="the-canvas"></canvas>
+</body>
+
+<script src="./build/pdf.js"></script>
+<script>
+    function getDocs() {
+        let output = ""
+        fetch('http://localhost:5000/docs')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                data.forEach(doc => {
+                    loadDocElement(doc)
+                })
+            })
+    }
+
+    function loadDocElement(doc) {
+        const root = document.getElementById("root")
+        // let container = document.createElement("div")
+        // container.className = "doc-container"
+        // container.onclick = () => window.location = "http://localhost:5000" + doc["path"]
+
+        let title = document.createElement("div")
+        title.className = "doc-title"
+        title.textContent = doc["title"]
+        title.onclick = () => window.location = "http://localhost:5000" + doc["path"]
+
+        root.appendChild(title)
+    }
+
+    getDocs()
+</script>
+
+<script id="script">
+    //
+    // If absolute URL from the remote server is provided, configure the CORS
+    // header on that server.
+    //
+    const url = 'http://localhost:5000/docs/The C Programming Language - Brian Kernighan.pdf';
+
+    //
+    // The workerSrc property shall be specified.
+    //
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        './build/pdf.worker.js';
+
+    //
+    // Asynchronous download PDF
+    //
+    const loadingTask = pdfjsLib.getDocument(url);
+    (async () => {
+        const pdf = await loadingTask.promise;
+        //
+        // Fetch the first page
+        //
+        const page = await pdf.getPage(1);
+        const scale = 1.5;
+        const viewport = page.getViewport({ scale });
+        // Support HiDPI-screens.
+        const outputScale = window.devicePixelRatio || 1;
+
+        //
+        // Prepare canvas using PDF page dimensions
+        //
+        const canvas = document.getElementById("the-canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        canvas.style.height = Math.floor(viewport.height) + "px";
+
+        const transform = outputScale !== 1 
+        ? [outputScale, 0, 0, outputScale, 0, 0] 
+        : null;
+
+        //
+        // Render PDF page into canvas context
+        //
+        const renderContext = {
+        canvasContext: context,
+        transform,
+        viewport,
+        };
+        page.render(renderContext);
+    })();
+</script>
+<style>
+    /* .doc-container {
+        width: 5vw;
+        height: 15vh;
+        background: red;
+    } */
+
+    .doc-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        font-family: monospace;
+        cursor: pointer;
+        margin-bottom: 15px;
+    }
+</style>
+</html>
