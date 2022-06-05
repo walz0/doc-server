@@ -65,7 +65,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   defaultUrl: {
-    value: "",
+    value: "compressed.tracemonkey-pldi-09.pdf",
     kind: OptionKind.VIEWER
   },
   defaultZoomValue: {
@@ -1450,6 +1450,8 @@ const PDFViewerApplication = {
       }
     });
 
+    this.pdfHistory.pushPage(20);
+
     this._initializePageLabels(pdfDocument);
 
     this._initializeMetadata(pdfDocument);
@@ -2222,7 +2224,11 @@ function webViewerInitialized() {
   const queryString = document.location.search.substring(1);
   const params = (0, _ui_utils.parseQueryString)(queryString);
 
-  file = params.get("file") ?? _app_options.AppOptions.get("defaultUrl");
+  // file = params.get("file") ?? _app_options.AppOptions.get("defaultUrl");
+  let cookies = document.cookie.split(";")
+  let path = cookies.filter(cookie => cookie.includes("path="))[0].split("=")[1]
+  file = path
+  console.log(file)
   validateFileURL(file);
   const fileInput = appConfig.openFileInput;
   fileInput.value = null;
@@ -2289,6 +2295,7 @@ function webViewerInitialized() {
       });
     }
   }, true);
+
 
   try {
     if (file) {
@@ -7214,6 +7221,18 @@ class PDFOutlineViewer extends _base_tree_viewer.BaseTreeViewer {
 
     this.eventBus._on("pagechanging", evt => {
       this._currentPageNumber = evt.pageNumber;
+      // save page progress in backend
+      fetch("http://localhost:5000/save", {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify({"checksum": document.cookie.split("=")[1], "currentPage": evt.pageNumber})
+      });
     });
 
     this.eventBus._on("pagesloaded", evt => {
@@ -15587,5 +15606,6 @@ if (document.readyState === "interactive" || document.readyState === "complete")
 })();
 
 /******/ })()
-;
+
+
 //# sourceMappingURL=viewer.js.map

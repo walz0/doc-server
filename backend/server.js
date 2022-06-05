@@ -37,8 +37,10 @@ function getLastPage(checksum) {
 
 function saveLastPage(checksum, currentPage) {
     let data = JSON.parse(fs.readFileSync("./data.json"))
-    data[checksum]["lastPage"] = currentPage
-    fs.writeFileSync(data[checksum]["path"], data)
+    data[checksum] = {
+        "lastPage": currentPage
+    }
+    fs.writeFileSync("./data.json", JSON.stringify(data))
 }
 
 // get all docs
@@ -51,8 +53,7 @@ app.get('/docs', (req, res) => {
             const lastPage = getLastPage(checksum)
             output.push({
                 "path": '/docs/' + file,
-                "title": file,
-                "lastPage": lastPage,
+                "title": file, "lastPage": lastPage,
                 "checksum": checksum
             })
         })
