@@ -36,7 +36,7 @@
         title.onclick = async () => {
             document.cookie = "document=" + doc["checksum"]
             document.cookie = "path=/backend/public" + doc["path"]
-            window.location = "./web/viewer.html#page=" + doc["lastPage"]
+            window.open("./web/viewer.html#page=" + doc["lastPage"], "_blank")
         }
 
         root.appendChild(title)
