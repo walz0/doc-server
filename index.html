@@ -12,10 +12,10 @@
 </body>
 
 <script>
-    const api = 'http://localhost:5000/docs'
+    const api = 'http://localhost:5000'
 
     function getDocs() {
-        fetch(api)
+        fetch(api + "/docs")
             .then(response => response.json())
             .then(data => {
                 data.forEach(doc => {
