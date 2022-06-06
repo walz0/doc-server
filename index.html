@@ -35,7 +35,7 @@
         title.textContent =  "[" + doc["lastPage"] + "] " + doc["title"]
         title.onclick = async () => {
             document.cookie = "document=" + doc["checksum"]
-            document.cookie = "path=" + api + doc["path"]
+            document.cookie = "path=../backend/public" + doc["path"]
             window.open("./web/viewer.html#page=" + doc["lastPage"], "_blank")
         }
 
