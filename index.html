@@ -32,10 +32,10 @@
 
         let title = document.createElement("div")
         title.className = "doc-title"
-        title.textContent = doc["title"]
+        title.textContent =  "[" + doc["lastPage"] + "] " + doc["title"]
         title.onclick = async () => {
             document.cookie = "document=" + doc["checksum"]
-            document.cookie = "path=/backend/public" + doc["path"]
+            document.cookie = "path=" + api + doc["path"]
             window.open("./web/viewer.html#page=" + doc["lastPage"], "_blank")
         }
 
